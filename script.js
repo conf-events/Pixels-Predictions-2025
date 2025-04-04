@@ -1,30 +1,39 @@
-const learnMoreEmails = new Set();
-const registerEmails = new Set();
-
-document.getElementById('learnMoreForm').addEventListener('submit', function (e) {
+// Learn More Form
+document.getElementById('learnMoreForm').addEventListener('submit', async function (e) {
   e.preventDefault();
-  const email = document.getElementById('learnEmail').value.trim().toLowerCase();
+  const email = document.getElementById('learnEmail').value;
   const msg = document.getElementById('learnMoreMsg');
 
-  if (learnMoreEmails.has(email)) {
-    msg.textContent = 'This email is already subscribed.';
-  } else {
-    learnMoreEmails.add(email);
-    msg.textContent = 'Thank you! You’re on the list.';
-    this.reset();
-  }
+  const res = await fetch('/api/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+
+  const data = await res.json();
+  msg.textContent = data.message;
+  msg.style.color = res.ok ? 'green' : 'red';
+
+  if (res.ok) this.reset();
 });
 
-document.getElementById('registerForm').addEventListener('submit', function (e) {
+// Conference Registration Form
+document.getElementById('registerForm').addEventListener('submit', async function (e) {
   e.preventDefault();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const name = document.getElementById('regName').value;
+  const surname = document.getElementById('regSurname').value;
+  const email = document.getElementById('regEmail').value;
   const msg = document.getElementById('registerMsg');
 
-  if (registerEmails.has(email)) {
-    msg.textContent = 'This email is already registered.';
-  } else {
-    registerEmails.add(email);
-    msg.textContent = 'Registration successful!';
-    this.reset();
-  }
+  const res = await fetch('/api/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, surname, email })
+  });
+
+  const data = await res.json();
+  msg.textContent = data.message;
+  msg.style.color = res.ok ? 'green' : 'red';
+
+  if (res.ok) this.reset();
 });
